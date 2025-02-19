@@ -1,5 +1,50 @@
 ---
-console.log('hoge')
+import { supabase } from '../lib/supabase'
+import chatbot from '../assets/chat-bot.svg'
+
+const { base } = Astro.props
+
+const { data, error } = await supabase
+  .from('questionnaire_detail')
+  .select()
+  .eq('base_id', base)
+  .order('created_at', { ascending: true })
+  .limit(3)
+
+if (error) {
+  throw new Error(error.message)
+}
 ---
 
-<div>server</div>
+<div class="w-full flex flex-col">
+  {data.map(item => (
+    <div class="w-full flex items-center mb-3">
+      <div class="p-1 mr-4 h-fit border-rounded" style="background: linear-gradient(45deg, #9392FD, #F395F5);">
+        <img src={chatbot.src} class="chatbot" width="36" height="36" alt="bot image" />
+      </div>
+      <div class="card items-center w-full flex bg-slate-50 py-3 pr-3 border-rounded">
+        <div class="w-full whitespace-pre-wrap">
+          {item.content}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+.card {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-break: strict;
+}
+.card::before {
+  content: '';
+  position: relative;
+  top: 0px;
+  left: -19px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-right-color: #f8fafc;
+}
+</style>
